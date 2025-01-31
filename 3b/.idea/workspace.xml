@@ -9,93 +9,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7e1d2fde-4062-46e2-8930-a360d9b30920" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../1a/hello/go.mod" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../1a/hello/go.sum" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../1a/hello/hello.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../1a/web-service-gin/go.mod" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../1a/web-service-gin/go.sum" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../1a/web-service-gin/main" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../1a/web-service-gin/main.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../1b/Screenshot 2025-01-20 at 5.01.17 PM.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../1b/Screenshot 2025-01-20 at 5.01.25 PM.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../1b/Screenshot 2025-01-20 at 5.01.40 PM.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../1b/Screenshot 2025-01-20 at 5.01.58 PM.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../1b/main" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/.idea/2a.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/2a.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/Assignment 2a Report.docx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/Assignment 2a Report.pdf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/Collection1.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/Collection2.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/MultithreadedCounter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/MultithreadedFileWriter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/MultithreadedFileWriter_AltSolution.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/out/production/2a/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/out/production/2a/.idea/2a.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/out/production/2a/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/out/production/2a/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/out/production/2a/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/out/production/2a/2a.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/out/production/2a/Assignment 2a Report.docx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/out/production/2a/Assignment 2a Report.pdf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/out/production/2a/Collection1.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/out/production/2a/Collection2.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/out/production/2a/MultithreadedCounter.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/out/production/2a/MultithreadedFileWriter.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/out/production/2a/MultithreadedFileWriter_AltSolution.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/out/production/2a/output.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/out/production/2a/results/collection1.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/out/production/2a/results/collection2.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/out/production/2a/results/multithreaded_counter.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/out/production/2a/results/multithreaded_filewriter_1000.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/out/production/2a/results/multithreaded_filewriter_10000.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/out/production/2a/results/multithreaded_filewriter_2000.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/out/production/2a/results/multithreaded_filewriter_5000.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/out/production/2a/results/multithreaded_filewriter_altsolution_10000.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/output.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/results/collection1.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/results/collection2.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/results/multithreaded_counter.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/results/multithreaded_filewriter_1000.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/results/multithreaded_filewriter_10000.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/results/multithreaded_filewriter_2000.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/results/multithreaded_filewriter_5000.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2a/results/multithreaded_filewriter_altsolution_10000.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2b/.idea/2b.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2b/2b/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2b/2b/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2b/2b/.idea/artifacts/2b_war.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2b/2b/.idea/artifacts/2b_war_exploded.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2b/2b/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2b/2b/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2b/2b/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2b/2b/out/artifacts/2b_war/2b_war.war" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2b/2b/out/artifacts/2b_war_exploded/META-INF/MANIFEST.MF" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2b/2b/out/artifacts/2b_war_exploded/WEB-INF/classes/SkierServlet.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2b/2b/out/artifacts/2b_war_exploded/WEB-INF/classes/WEB-INF/web.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2b/2b/out/artifacts/2b_war_exploded/WEB-INF/classes/index.jsp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2b/2b/out/artifacts/2b_war_exploded/WEB-INF/web.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2b/2b/out/artifacts/2b_war_exploded/index.jsp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2b/2b/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2b/2b/src/main/java/SkierServlet.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2b/2b/web/WEB-INF/web.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../2b/2b/web/index.jsp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../3a.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/artifacts/3b_war_exploded.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/HelloWorldServlet.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/web.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../csjkey.pem" afterDir="false" />
-    </list>
+    <list default="true" id="7e1d2fde-4062-46e2-8930-a360d9b30920" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -130,6 +44,7 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/chenyujiang/Desktop/6650/CS6650/3b",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -158,7 +73,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1738286465261</updated>
-      <workItem from="1738286466762" duration="853000" />
+      <workItem from="1738286466762" duration="1113000" />
     </task>
     <servers />
   </component>
