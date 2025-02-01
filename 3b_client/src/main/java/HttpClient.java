@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 
 public class HttpClient {
 
-    private static final String URL = "http://34.218.255.50:8080/3b_war/hello/";
+    private static final String URL = "http://35.91.82.4:8080/3b_war/hello/";
 
     public static void main(String[] args) {
         try (CloseableHttpClient client = HttpClients.createDefault()) {
