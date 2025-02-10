@@ -6,10 +6,8 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="3b_client" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="3b" target="23" />
-    </bytecodeTargetLevel>
   </component>
 </project>
