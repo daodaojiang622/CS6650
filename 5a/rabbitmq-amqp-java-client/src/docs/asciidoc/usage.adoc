@@ -1,0 +1,264 @@
+:test-examples: ../../test/java/com/rabbitmq/client/amqp/docs
+
+[[api-overview]]
+== Overview
+
+The RabbitMQ team maintains a set of AMQP 1.0 client libraries designed and optimized for RabbitMQ.
+They offer a simple and safe, yet powerful API on top of AMQP 1.0. Applications can publish and consume messages with these libraries, as well as manage the server topology in a consistent way across programming languages.
+The libraries also offer advanced features like automatic connection and topology recovery, and connection affinity with queues.
+
+The RabbitMQ AMQP 1.0 Java Client is one of these libraries.
+This documentation covers only the advanced usage of the library; a https://www.rabbitmq.com/client-libraries/amqp-client-libraries[common page on the RabbitMQ website] covers the most common use cases.
+
+== Advanced Usage
+
+=== Connection Settings at the Environment Level
+
+Connection settings (URI, credentials, etc) can be set at the environment level.
+They will then be re-used for each connection.
+It is possible to override the environment connection settings for a given connection:
+
+.Connection settings at the environment and connection levels
+[source,java,indent=0]
+--------
+include::{test-examples}/Api.java[tag=connection-settings]
+--------
+<1> Use the `guest` user by default
+<2> Use the `admin` user for this connection
+
+=== Settling Messages in Batch
+
+.Settling messages in batch
+[source,java,indent=0]
+--------
+include::{test-examples}/Api.java[tag=settling-message-in-batch]
+--------
+<1> Declare batch context property
+<2> Create a new batch context instance
+<3> Add the current message context to the batch context if processing is successful
+<4> Settle the batch context once it contains 10 messages
+<5> Reset the batch context
+<6> Discard the current message context if processing fails
+
+
+=== Subscription Listener
+
+The client provides a `SubscriptionListener` interface callback to add behavior before a subscription is created.
+This callback is meant for stream consumers: it can be used to dynamically set the offset the consumer attaches to in the stream.
+It is called when the consumer is first created and when the client has to re-subscribe (e.g. after a disconnection).
+
+It is possible to use the callback to get the last processed offset from an external store.
+The following code snippet shows how this can be done (note the interaction with the external store is not detailed):
+
+.Using the subscription listener to attach to a stream
+[source,java,indent=0]
+--------
+include::{test-examples}/Api.java[tag=subscription-listener]
+--------
+<1> Set subscription listener
+<2> Get offset from external store
+<3> Set offset to use for the subscription
+<4> Get the message offset
+<5> Store the offset in the external store after processing
+
+=== OAuth 2 Support
+
+The client can authenticate against an OAuth 2 server like https://github.com/cloudfoundry/uaa[UAA].
+It uses the https://tools.ietf.org/html/rfc6749#section-4.4[OAuth 2 Client Credentials flow].
+The https://www.rabbitmq.com/docs/oauth2[OAuth 2 plugin] must be enabled on the server side and configured to use the same OAuth 2 server as the client.
+
+How to retrieve the OAuth 2 token can be globally configured at the environment level:
+
+.Configuring OAuth 2 token retrieval
+[source,java,indent=0]
+--------
+include::{test-examples}/Api.java[tag=oauth2]
+--------
+<1> Access the OAuth 2 configuration
+<2> Set the token endpoint URI
+<3> Authenticate the client application
+<4> Set the grant type
+<5> Set optional parameters (depends on the OAuth 2 server)
+<6> Set the SSL context (e.g. to verify and trust the identity of the OAuth 2 server)
+<7> The token can be shared across the environment connections
+
+The environment retrieves tokens and uses them to create AMQP connections.
+It also takes care of refreshing the tokens before they expire and of re-authenticating existing connections so the broker does not close them when their token expires.
+
+The environment uses the same token for all the connections it maintains by default, but this can be changed by setting the `shared` flag to `false`.
+With `shared = false`, each connection will have its own OAuth 2 token.
+
+The OAuth 2 configuration can be set at the environment level but also at the connection level.
+
+=== Metrics Collection
+
+The library provides the {javadoc-url}/com/rabbitmq/client/amqp/metrics/MetricsCollector.html[`MetricsCollector`] abstraction to collect metrics.
+A `MetricsCollector` instance is set at the environment level and is called in several places by the library.
+The underlying implementation can then collect, compute and expose metrics.
+
+The library provides the `MicrometerMetricsCollector`, an implementation based on https://micrometer.io/[Micrometer].
+Micrometer is a façade for observability systems: the user can choose the Micrometer meter registry for their favorite system.
+
+Here is how to set up the Micrometer metrics collector and configure it for Prometheus:
+
+.Setting metrics collection with Prometheus
+[source,java,indent=0]
+--------
+include::{test-examples}/Api.java[tag=metrics-micrometer-prometheus]
+--------
+<1> Create the Micrometer meter registry for Prometheus
+<2> Create the metrics collector with the registry
+<3> Set the metrics collector in the environment builder
+<4> Create a connection, a Micrometer gauge is incremented
+
+The following metrics are recorded:
+
+* the number of open connections
+* the number of open publishers
+* the number of open consumers
+* the total number of published messages
+* the total number of accepted published messages
+* the total number of rejected published messages
+* the total number of released published messages
+* the total number of consumed messages
+* the total number of accepted consumed messages
+* the total number of requeued consumed messages
+* the total number of discarded consumed messages
+
+Here is an example of the Prometheus output:
+
+.Example of the Prometheus output
+[source,prometheus]
+------
+# HELP rabbitmq_amqp_connections
+# TYPE rabbitmq_amqp_connections gauge
+rabbitmq_amqp_connections 1.0
+# HELP rabbitmq_amqp_consumed_total
+# TYPE rabbitmq_amqp_consumed_total counter
+rabbitmq_amqp_consumed_total 3.0
+# HELP rabbitmq_amqp_consumed_accepted_total
+# TYPE rabbitmq_amqp_consumed_accepted_total counter
+rabbitmq_amqp_consumed_accepted_total 1.0
+# HELP rabbitmq_amqp_consumed_discarded_total
+# TYPE rabbitmq_amqp_consumed_discarded_total counter
+rabbitmq_amqp_consumed_discarded_total 1.0
+# HELP rabbitmq_amqp_consumed_requeued_total
+# TYPE rabbitmq_amqp_consumed_requeued_total counter
+rabbitmq_amqp_consumed_requeued_total 1.0
+# HELP rabbitmq_amqp_consumers
+# TYPE rabbitmq_amqp_consumers gauge
+rabbitmq_amqp_consumers 1.0
+# HELP rabbitmq_amqp_published_total
+# TYPE rabbitmq_amqp_published_total counter
+rabbitmq_amqp_published_total 2.0
+# HELP rabbitmq_amqp_published_accepted_total
+# TYPE rabbitmq_amqp_published_accepted_total counter
+rabbitmq_amqp_published_accepted_total 1.0
+# HELP rabbitmq_amqp_published_rejected_total
+# TYPE rabbitmq_amqp_published_rejected_total counter
+rabbitmq_amqp_published_rejected_total 1.0
+# HELP rabbitmq_amqp_published_released_total
+# TYPE rabbitmq_amqp_published_released_total counter
+rabbitmq_amqp_published_released_total 1.0
+# HELP rabbitmq_amqp_publishers
+# TYPE rabbitmq_amqp_publishers gauge
+rabbitmq_amqp_publishers 1.0
+------
+
+=== Remote Procedure Call (RPC)
+
+Remote procedure call with RabbitMQ consists in a client sending a request message and a server replying with a response message.
+Both the RPC client and server are _client applications_ and the messages flow through the broker.
+The RPC client must send a reply-to queue address with the request.
+The RPC server uses this reply-to queue address to send the response.
+There must also be a way to correlate a request with its response, this is usually handled with a header that the RPC client and server agree on.
+
+The library provides RPC client and server support classes.
+They use sensible defaults and some of the internal mechanics are configurable.
+They should meet the requirements of most RPC use cases.
+It is still possible to implement one part or the other with regular publishers and consumers for special cases, as this is what the RPC support classes do.
+
+Here is how to create an RPC server instance:
+
+.Creating an RPC server
+[source,java,indent=0]
+--------
+include::{test-examples}/RpcApi.java[tag=rpc-server-creation]
+--------
+<1> Use builder from connection
+<2> Set the queue to consume requests from (it must exist)
+<3> Define the processing logic
+<4> Create the reply message
+
+Note the RPC server does not create the queue it waits requests on.
+It must be created beforehand.
+
+Here is how to create an RPC client:
+
+.Creating an RPC client
+[source,java,indent=0]
+--------
+include::{test-examples}/RpcApi.java[tag=rpc-client-creation]
+--------
+<1> Use builder from connection
+<2> Set the address to send request messages to
+
+The RPC client will send its request to the configured destination.
+It can be an exchange or a queue, like in the example above.
+
+Here is how to send a request:
+
+.Sending a request
+[source,java,indent=0]
+--------
+include::{test-examples}/RpcApi.java[tag=rpc-client-request]
+--------
+<1> Create the message request
+<2> Send the request
+<3> Wait for the reply (synchronously)
+
+The `RpcClient#publish(Message)` method returns a `CompletableFuture<Message>` that holds the reply message.
+It is then possible to wait for the reply asynchronously or synchronously.
+
+The RPC server uses the following defaults:
+
+* it uses the _request_ https://docs.oasis-open.org/amqp/core/v1.0/os/amqp-core-messaging-v1.0-os.html#type-properties[`message-id` property] for the correlation ID.
+* it assigns the correlation ID (so the _request_ `message-id` by default) to the _reply_ https://docs.oasis-open.org/amqp/core/v1.0/os/amqp-core-messaging-v1.0-os.html#type-properties[`correlation-id` property].
+* it assigns the _request_ https://docs.oasis-open.org/amqp/core/v1.0/os/amqp-core-messaging-v1.0-os.html#type-properties[`reply-to` property] to the _reply_ https://docs.oasis-open.org/amqp/core/v1.0/os/amqp-core-messaging-v1.0-os.html#type-properties[`to` property] if it is defined.
+This behavior is hardcoded but it is possible to cancel it thanks to a reply post-processor.
+
+The RPC client uses the following defaults:
+
+* it creates and waits for replies on an auto-delete, exclusive queue if no reply-to queue is set.
+* it uses a string-based correlation ID generator, with a fixed random UUID prefix and a strictly monotonic increasing sequence suffix (`{UUID}-{sequence}`, e.g. `6f839461-6b19-47e1-80b3-6be10d899d85-42`).
+The prefix is different for each `RpcClient` instance and the suffix is incremented by one for each request.
+* it sets the _request_ https://docs.oasis-open.org/amqp/core/v1.0/os/amqp-core-messaging-v1.0-os.html#type-properties[`reply-to` property] to the reply-to queue address (defined by the user or created automatically, see above).
+* it sets the _request_ https://docs.oasis-open.org/amqp/core/v1.0/os/amqp-core-messaging-v1.0-os.html#type-properties[`message-id` property] to the generated correlation ID.
+* it extracts the correlation ID from the _reply_ https://docs.oasis-open.org/amqp/core/v1.0/os/amqp-core-messaging-v1.0-os.html#type-properties[`correlation-id` property] to correlate a reply with the appropriate request.
+
+Let's see how to customize some of the RPC support mechanics.
+Imagine the request `message-id` property is a critical piece of information and we do not want to use it as the correlation ID.
+The request can use the `correlation-id` property and the RPC server just has to extract the correlation ID from this property (instead of the `message-id` property by default).
+Let's also use a random UUID for the correlation ID generation (avoids doing this in production: this is OK in terms of uniqueness but not optimal in terms of performance because randomness is not cheap).
+
+Here is how to declare the RPC client:
+
+.Customizing the RPC client
+[source,java,indent=0]
+--------
+include::{test-examples}/RpcApi.java[tag=rpc-custom-client-creation]
+--------
+<1> Declare the reply-to queue
+<2> Use a random UUID as correlation ID
+<3> Use the `correlation-id` property for the request
+<4> Set the `reply-to` property
+<5> Set the address to send request messages to
+
+We just have to tell the RPC server to get the correlation ID from the request `correlation-id` property:
+
+.Customizing the RPC server
+[source,java,indent=0]
+--------
+include::{test-examples}/RpcApi.java[tag=rpc-custom-server-creation]
+--------
+<1> Get the correlation ID from the request `correlation-id` property
