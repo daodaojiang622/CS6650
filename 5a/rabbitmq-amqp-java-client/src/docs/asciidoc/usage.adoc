@@ -214,7 +214,7 @@ Here is how to send a request:
 include::{test-examples}/RpcApi.java[tag=rpc-client-request]
 --------
 <1> Create the message request
-<2> Send the request
+<2> tutorial1.Send the request
 <3> Wait for the reply (synchronously)
 
 The `RpcClient#publish(Message)` method returns a `CompletableFuture<Message>` that holds the reply message.
