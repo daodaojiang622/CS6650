@@ -1,0 +1,1 @@
+{"errorMessage":"class com.amazonaws.services.lambda.runtime.api.client.EventHandlerLoader cannot access a member of class LambdaHandler with modifiers \"public\"","errorType":"java.lang.IllegalAccessException"}
