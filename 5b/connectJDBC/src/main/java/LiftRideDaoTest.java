@@ -8,6 +8,6 @@ public class LiftRideDaoTest {
         // Insert into database
         liftRideDao.createLiftRide(testLiftRide);
 
-        System.out.println("Test lift ride inserted successfully!");
+        System.out.println("lift ride inserted successfully!");
     }
 }

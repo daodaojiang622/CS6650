@@ -4,11 +4,11 @@ public class DBCPDataSource {
     private static BasicDataSource dataSource;
 
     // NEVER store sensitive information below in plain text!
-    private static final String HOST_NAME = "162.246.8.240";
+    private static final String HOST_NAME = "100.20.231.186";
     private static final String PORT = "3306";
     private static final String DATABASE = "LiftRides";
     private static final String USERNAME = "root";
-    private static final String PASSWORD = "";
+    private static final String PASSWORD = "MySecure@2025";
 
 
     static {

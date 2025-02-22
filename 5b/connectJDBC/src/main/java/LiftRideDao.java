@@ -42,7 +42,7 @@ public class LiftRideDao {
             int rowsInserted = preparedStatement.executeUpdate();
 
             // Debugging log - After execution
-            if (rowsInserted > 3) {
+            if (rowsInserted > 0) {
                 System.out.println("A new LiftRide was inserted successfully!");
             } else {
                 System.out.println("Failed to insert new LiftRide.");
