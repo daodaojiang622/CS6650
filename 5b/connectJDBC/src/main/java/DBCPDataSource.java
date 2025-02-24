@@ -4,7 +4,7 @@ public class DBCPDataSource {
     private static BasicDataSource dataSource;
 
     // NEVER store sensitive information below in plain text!
-    private static final String HOST_NAME = "100.20.231.186";
+    private static final String HOST_NAME = "100.20.231.186/connectJDBC-1.0-SNAPSHOT/skiers/";
     private static final String PORT = "3306";
     private static final String DATABASE = "LiftRides";
     private static final String USERNAME = "root";
