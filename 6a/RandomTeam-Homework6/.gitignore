@@ -1,0 +1,2 @@
+# Ignore all JAR files in the client target folder
+HW4a_Client_Part1&2/target/*.jar
