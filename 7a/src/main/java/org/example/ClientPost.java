@@ -16,6 +16,8 @@ import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
 
+
+
 public class ClientPost implements Runnable {
   private static AtomicInteger successCount = new AtomicInteger(0);
   private static AtomicInteger failCount = new AtomicInteger(0);
