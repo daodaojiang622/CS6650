@@ -14,6 +14,9 @@ import javax.servlet.http.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @WebServlet(name = "Server", value = "/*")
 @MultipartConfig
@@ -68,9 +71,103 @@ public class Server extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
           throws ServletException, IOException {
-    response.setContentType("text/plain");
-    response.getWriter().write("✅ Server is running on Tomcat!");
+    response.setContentType("application/json");
+    String url = request.getPathInfo();
+
+    response.getWriter().write("DEBUG: Received URL path: " + url + "\n");
+
+    if (url == null || url.equals("/albums")) {
+      // Case 1: Get all albums
+      getAllAlbums(response);
+    } else {
+      String[] urlParts = url.split("/");
+
+      response.getWriter().write("DEBUG: Split URL parts: " + Arrays.toString(urlParts) + "\n");
+
+      if (urlParts.length == 3) {
+        // Case 2: Get specific album by ID
+        getAlbumById(urlParts[2], response);
+      } else if (urlParts.length == 4 && urlParts[3].equals("reviews")) {
+        // Case 3: Get album reviews (like/dislike count)
+        getAlbumReviews(urlParts[2], response);
+      } else {
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        response.getWriter().write("{\"error\": \"Invalid request\"}");
+      }
+    }
   }
+
+  private void getAllAlbums(HttpServletResponse response) throws IOException {
+    try (Statement stmt = dbConnection.createStatement();
+         ResultSet rs = stmt.executeQuery("SELECT id, artist, title, year FROM albums")) {
+
+      List<AlbumInfo> albums = new ArrayList<>();
+      while (rs.next()) {
+        albums.add(new AlbumInfo(
+                rs.getString("artist"),
+                rs.getString("title"),
+                rs.getInt("year"),
+                rs.getInt("id")
+        ));
+      }
+      response.getWriter().write(new Gson().toJson(albums));
+
+    } catch (SQLException e) {
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      response.getWriter().write("{\"error\": \"Database error: " + e.getMessage() + "\"}");
+    }
+  }
+
+  private void getAlbumById(String albumId, HttpServletResponse response) throws IOException {
+    try (PreparedStatement stmt = dbConnection.prepareStatement(
+            "SELECT id, artist, title, year FROM albums WHERE id = ?")) {
+      stmt.setInt(1, Integer.parseInt(albumId));
+      ResultSet rs = stmt.executeQuery();
+
+      if (rs.next()) {
+        AlbumInfo album = new AlbumInfo(
+                rs.getString("artist"),
+                rs.getString("title"),
+                rs.getInt("year"),
+                rs.getInt("id")
+        );
+        response.getWriter().write(new Gson().toJson(album));
+      } else {
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        response.getWriter().write("{\"error\": \"Album not found\"}");
+      }
+
+    } catch (SQLException e) {
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      response.getWriter().write("{\"error\": \"Database error: " + e.getMessage() + "\"}");
+    }
+  }
+
+  private void getAlbumReviews(String albumId, HttpServletResponse response) throws IOException {
+    try (PreparedStatement stmt = dbConnection.prepareStatement(
+            "SELECT review_type, COUNT(*) as count FROM album_reviews WHERE album_id = ? GROUP BY review_type")) {
+      stmt.setInt(1, Integer.parseInt(albumId));
+      ResultSet rs = stmt.executeQuery();
+
+      int likes = 0, dislikes = 0;
+      while (rs.next()) {
+        if ("like".equals(rs.getString("review_type"))) {
+          likes = rs.getInt("count");
+        } else if ("dislike".equals(rs.getString("review_type"))) {
+          dislikes = rs.getInt("count");
+        }
+      }
+
+      // Return JSON response
+      String jsonResponse = "{\"albumId\": " + albumId + ", \"likes\": " + likes + ", \"dislikes\": " + dislikes + "}";
+      response.getWriter().write(jsonResponse);
+
+    } catch (SQLException e) {
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      response.getWriter().write("{\"error\": \"Database error: " + e.getMessage() + "\"}");
+    }
+  }
+
 
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
