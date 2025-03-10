@@ -20,8 +20,8 @@ public class Main {
   private static final int NUMBER_OF_GROUPS = 20;
   private static final int DELAY = 2;
   // IP address of the java servlet server
-  private static final String IPAddr = "54.201.122.22:9090";
-  private static final String FILE_PATH = "/Users/chenyujiang/Desktop/6650/CS6650/6a/RandomTeam-Homework6/assets/image.jpeg";
+  private static final String IPAddr = "localhost:9090/server-1.0-SNAPSHOT";
+  private static final String FILE_PATH = "src/main/resources/image.jpeg";
 
   public static void main(String[] args) {
     PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
@@ -40,7 +40,7 @@ public class Main {
                       .add("code", "integer");
       List<Row> list = Collections.synchronizedList(new ArrayList<>());
       File file = new File(FILE_PATH);
-      ClientGet clientGet = new ClientGet(IPAddr, client, list);
+//      ClientGet clientGet = new ClientGet(IPAddr, client, list);
       ClientPost clientPost = new ClientPost(IPAddr, client, list, file);
 
 //      CountDownLatch completed = new CountDownLatch(10);
@@ -65,7 +65,7 @@ public class Main {
         for (int i = 0; i < GROUP_SIZE; i++) {
           Runnable thread = () -> {
             for (int k = 0; k < 1; k++) {
-              clientGet.run();
+//              clientGet.run();
               clientPost.run();
             }
             completed2.countDown();
@@ -83,25 +83,25 @@ public class Main {
       long end = System.currentTimeMillis();
       Dataset<Row> data = spark.createDataFrame(list, schema);
       //data.show();
-      Dataset<Row> getMean = data.filter("requestType == 'GET'").groupBy().avg("latency");
+//      Dataset<Row> getMean = data.filter("requestType == 'GET'").groupBy().avg("latency");
       Dataset<Row> postMean = data.filter("requestType == 'POST'").groupBy().avg("latency");
-      Dataset<Row> getMin = data.filter("requestType == 'GET'").groupBy().min("latency");
+//      Dataset<Row> getMin = data.filter("requestType == 'GET'").groupBy().min("latency");
       Dataset<Row> postMin = data.filter("requestType == 'POST'").groupBy().min("latency");
-      Dataset<Row> getMax = data.filter("requestType == 'GET'").groupBy().max("latency");
+//      Dataset<Row> getMax = data.filter("requestType == 'GET'").groupBy().max("latency");
       Dataset<Row> postMax = data.filter("requestType == 'POST'").groupBy().max("latency");
-      double[] get5099 = data.filter("requestType == 'GET'").stat()
-              .approxQuantile("latency", new double[] {0.5, 0.99}, 0);
+//      double[] get5099 = data.filter("requestType == 'GET'").stat()
+//              .approxQuantile("latency", new double[] {0.5, 0.99}, 0);
       double[] post5099 = data.filter("requestType == 'POST'").stat()
               .approxQuantile("latency", new double[] {0.5, 0.99}, 0);
-      System.out.println("GET Mean Latency: " + getMean.first().getDouble(0));
+//      System.out.println("GET Mean Latency: " + getMean.first().getDouble(0));
       System.out.println("POST Mean Latency: " + postMean.first().getDouble(0));
-      System.out.println("GET Min Latency: " + getMin.first().getLong(0));
+//      System.out.println("GET Min Latency: " + getMin.first().getLong(0));
       System.out.println("POST Min Latency: " + postMin.first().getLong(0));
-      System.out.println("GET Max Latency: " + getMax.first().getLong(0));
+//      System.out.println("GET Max Latency: " + getMax.first().getLong(0));
       System.out.println("POST Max Latency: " + postMax.first().getLong(0));
-      System.out.println("GET 50th Percentile: " + get5099[0]);
+//      System.out.println("GET 50th Percentile: " + get5099[0]);
       System.out.println("POST 50th Percentile: " + post5099[0]);
-      System.out.println("GET 99th Percentile: " + get5099[1]);
+//      System.out.println("GET 99th Percentile: " + get5099[1]);
       System.out.println("POST 99th Percentile: " + post5099[1]);
       // overwrite csv automatically
       data.write().format("csv").mode("overwrite").save("data.csv");
@@ -113,10 +113,10 @@ public class Main {
 
       int postSuccesses = ClientPost.getSuccessCount();
       int postFails = ClientPost.getFailCount();
-      int getSuccesses = ClientGet.getSuccessCount();
-      int getFails = ClientGet.getFailCount();
-      System.out.println("Number of successful GET requests: " + getSuccesses);
-      System.out.println("Number of failed GET requests: " + getFails);
+//      int getSuccesses = ClientGet.getSuccessCount();
+//      int getFails = ClientGet.getFailCount();
+//      System.out.println("Number of successful GET requests: " + getSuccesses);
+//      System.out.println("Number of failed GET requests: " + getFails);
       System.out.println("Number of successful requests: " + postSuccesses);
       System.out.println("Number of failed requests: " + postFails);
 

@@ -24,7 +24,7 @@ public class ClientPost implements Runnable {
 
 
   public ClientPost(String IPAddr, CloseableHttpClient client, List<Row> data, File file) {
-    this.postUrl = "http://" + IPAddr + "/album";
+    this.postUrl = "http://" + IPAddr + "/IGORTON/AlbumStore/1.0.0/albums";
     this.client = client;
     this.data = data;
     this.file = file;
@@ -46,18 +46,16 @@ public class ClientPost implements Runnable {
     );
 
     // 2. Add the profile field as a single JSON string
-    // Example JSON: {"artist":"AgustD","title":"D-Day","year":"2023"}
+    // Example JSON: {"profile[artist]":"AgustD","profile[title]":"D-Day","profile[year]":"2023"}
     // Modify these values or pass them in as parameters if needed
-    String jsonProfile = "{\"artist\":\"AgustD\",\"title\":\"D-Day\",\"year\":\"2023\"}";
-
-    // Add the 'profile' field with JSON content
-    builder.addTextBody("profile", jsonProfile, ContentType.APPLICATION_JSON);
+    builder.addTextBody("profile[artist]", "AgustD", ContentType.TEXT_PLAIN);
+    builder.addTextBody("profile[title]", "D-Day", ContentType.TEXT_PLAIN);
+    builder.addTextBody("profile[year]", "2023", ContentType.TEXT_PLAIN);
 
     HttpEntity entity = builder.build();
 
     // Create a post method instance.
     HttpPost postMethod = new HttpPost(postUrl);
-
 
     // Provide custom retry handler is necessary
     /*postMethod.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
@@ -77,6 +75,7 @@ public class ClientPost implements Runnable {
       } else {
         failCount.incrementAndGet();
         System.err.println("Post Method failed: " + statusCode);
+        System.err.println("Post Method failed: " + response.getReasonPhrase());
       }
 
       long end = System.currentTimeMillis();

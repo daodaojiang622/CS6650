@@ -213,6 +213,10 @@ public class Server extends HttpServlet {
       }
     }
 
+    System.out.println("DEBUG: Received artist: " + artist);
+    System.out.println("DEBUG: Received title: " + title);
+    System.out.println("DEBUG: Received year: " + yearStr);
+
     try {
       PreparedStatement stmt = dbConnection.prepareStatement(
               "INSERT INTO albums (artist, title, year, image, image_size) VALUES (?, ?, ?, ?, ?)",
