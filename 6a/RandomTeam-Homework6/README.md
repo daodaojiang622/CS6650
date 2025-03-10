@@ -207,7 +207,17 @@ Build the executable with:
 go build -o CS6650HW6_GO main.go
 ```
 
-5. **Deploy on Multiple Instances:**
+5. **Set the DB_DSN Environment Variable:**
+```
+export DB_DSN="mydbuser:mydbpass123@tcp(demo-mysql.cfixvo8jjefs.us-west-2.rds.amazonaws.com:3306)/mydemodb"
+```
+
+6. **Running the Server:**
+```
+./CS6650HW6_GO
+```
+
+7**Deploy on Multiple Instances:**
 
 Repeat the above steps on any additional demo EC2 instances as needed to simulate a distributed environment.
 
