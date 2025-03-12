@@ -5,95 +5,134 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ClientPost implements Runnable {
   private static AtomicInteger successCount = new AtomicInteger(0);
   private static AtomicInteger failCount = new AtomicInteger(0);
-  private String postUrl;
+  private String postAlbumUrl;
+  private String postReviewUrl;
   private CloseableHttpClient client;
   private List<Row> data;
   private File file;
 
-
   public ClientPost(String IPAddr, CloseableHttpClient client, List<Row> data, File file) {
-    this.postUrl = "http://" + IPAddr + "/IGORTON/AlbumStore/1.0.0/albums";
+    this.postAlbumUrl = "http://" + IPAddr + "/IGORTON/AlbumStore/1.0.0/albums";
+    this.postReviewUrl = "http://" + IPAddr + "/review";  // URL for likes/dislikes
     this.client = client;
     this.data = data;
     this.file = file;
   }
 
-  // stolen from https://hc.apache.org/httpclient-legacy/tutorial.html
   public void run() {
-    long starttime = System.currentTimeMillis();
-    System.out.println("POST START: " + starttime + Thread.currentThread().getName());
+    try {
+      // POST a new album and get its albumId
+      int albumId = postNewAlbum();
+      if (albumId == -1) return;  // Album creation failed, skip likes/dislikes
+
+      // Post two likes
+      postReview(albumId, "like");
+      postReview(albumId, "like");
+
+      // Post one dislike
+      postReview(albumId, "dislike");
+
+//      System.out.println("Data: " + data);
+
+    } catch (Exception e) {
+      System.err.println("[ERROR]: " + e.getMessage());
+      e.printStackTrace();
+    }
+  }
+
+  // POST a new album and return albumId
+  private int postNewAlbum() {
     MultipartEntityBuilder builder = MultipartEntityBuilder.create();
     builder.setMode(HttpMultipartMode.STRICT);
 
-    // 1. Add the file part
-    builder.addBinaryBody(
-            "image",
-            file,
-            ContentType.IMAGE_JPEG,
-            "image.jpeg"
-    );
+    // Add the image file
+    builder.addBinaryBody("image", file, ContentType.IMAGE_JPEG, "image.jpeg");
 
-    // 2. Add the profile field as a single JSON string
-    // Example JSON: {"profile[artist]":"AgustD","profile[title]":"D-Day","profile[year]":"2023"}
-    // Modify these values or pass them in as parameters if needed
+    // Add profile fields separately (NOT JSON)
     builder.addTextBody("profile[artist]", "AgustD", ContentType.TEXT_PLAIN);
     builder.addTextBody("profile[title]", "D-Day", ContentType.TEXT_PLAIN);
     builder.addTextBody("profile[year]", "2023", ContentType.TEXT_PLAIN);
 
     HttpEntity entity = builder.build();
+    HttpPost postMethod = new HttpPost(postAlbumUrl);
+    postMethod.setEntity(entity);
 
-    // Create a post method instance.
-    HttpPost postMethod = new HttpPost(postUrl);
+    long albumStartTime = System.currentTimeMillis();
 
-    // Provide custom retry handler is necessary
-    /*postMethod.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
-        new DefaultHttpMethodRetryHandler(5, true));
-    */
-    try {
-      postMethod.setEntity(entity);
-      long start = System.currentTimeMillis();
-      CloseableHttpResponse response = client.execute(postMethod);
-      //postMethod.setRequestEntity(new MultipartRequestEntity(parts, postMethod.getParams()));
-
-
+    try (CloseableHttpResponse response = client.execute(postMethod)) {
       int statusCode = response.getCode();
-      // Distinguish success vs failure
+      String responseBody = EntityUtils.toString(response.getEntity());
+
       if (statusCode >= 200 && statusCode < 300) {
+        long albumEndTime = System.currentTimeMillis();
+        long albumLatency = albumEndTime - albumStartTime;
+
+        data.add(RowFactory.create(albumStartTime, "Album_POST", albumLatency, statusCode));
+
         successCount.incrementAndGet();
+        JsonObject jsonResponse = JsonParser.parseString(responseBody).getAsJsonObject();
+        int albumId = jsonResponse.get("albumId").getAsInt();
+        System.out.println("Created Album ID: " + albumId);
+        return albumId;
       } else {
         failCount.incrementAndGet();
-        System.err.println("Post Method failed: " + statusCode);
-        System.err.println("Post Method failed: " + response.getReasonPhrase());
+        System.err.println("[ERROR] POST Album failed: " + statusCode);
+        System.err.println("[ERROR] Server Response: " + responseBody);
+        return -1;
       }
-
-      long end = System.currentTimeMillis();
-
-      long latency = end - start;
-      data.add(RowFactory.create(start, "POST", latency, statusCode));
-
-      // Read the response body.
-      //byte[] responseBody = response.getEntity().getContent().readAllBytes();
-      //System.out.println(new String(responseBody));
-
-      // Consume response content
-      EntityUtils.consume(response.getEntity());
-      long endtime = System.currentTimeMillis();
-      System.out.println("POST END: " + endtime + Thread.currentThread().getName());
     } catch (IOException e) {
-      System.err.println("Fatal transport error: " + e.getMessage());
-      e.printStackTrace();
+      failCount.incrementAndGet();
+      System.err.println("[ERROR] POST Album error: " + e.getMessage());
+      return -1;
+    } catch (ParseException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  // POST a like or dislike for an album
+  private void postReview(int albumId, String reviewType) {
+    String userId = String.valueOf(System.currentTimeMillis());  // Unique user_id
+    HttpPost postMethod = new HttpPost(postReviewUrl + "/" + reviewType + "/" + albumId + "?user_id=" + userId);
+
+    long reviewStartTime = System.currentTimeMillis();
+
+    try (CloseableHttpResponse response = client.execute(postMethod)) {
+      int statusCode = response.getCode();
+      String responseBody = EntityUtils.toString(response.getEntity());
+
+      if (statusCode >= 200 && statusCode < 300) {
+        long reviewEndTime = System.currentTimeMillis();
+        long reviewLatency = reviewEndTime - reviewStartTime;
+
+        data.add(RowFactory.create(reviewStartTime, "Review_POST", reviewLatency, statusCode));
+
+        successCount.incrementAndGet();
+        System.out.println(reviewType.toUpperCase() + " Success for Album ID: " + albumId);
+      } else {
+        failCount.incrementAndGet();
+        System.err.println("[ERROR] POST Review failed: " + statusCode);
+        System.err.println("[ERROR] Server Response: " + responseBody);
+      }
+    } catch (IOException | ParseException e) {
+      failCount.incrementAndGet();
+      System.err.println("[ERROR] POST Review error: " + e.getMessage());
     }
   }
 

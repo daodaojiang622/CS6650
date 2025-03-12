@@ -6,21 +6,22 @@ import org.apache.hc.core5.util.TimeValue;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.functions;
 import org.apache.spark.sql.types.StructType;
 
+import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-// Delete data.csv folder each time before running the program
 public class Main {
   private static final int GROUP_SIZE = 10;
-  private static final int NUMBER_OF_GROUPS = 20;
+  private static final int NUMBER_OF_GROUPS = 10;
   private static final int DELAY = 2;
   // IP address of the java servlet server
-  private static final String IPAddr = "localhost:9090/server-1.0-SNAPSHOT";
+  private static final String IPAddr = "localhost:9090/server_1_0_SNAPSHOT_war";
   private static final String FILE_PATH = "src/main/resources/image.jpeg";
 
   public static void main(String[] args) {
@@ -42,20 +43,6 @@ public class Main {
       File file = new File(FILE_PATH);
 //      ClientGet clientGet = new ClientGet(IPAddr, client, list);
       ClientPost clientPost = new ClientPost(IPAddr, client, list, file);
-
-//      CountDownLatch completed = new CountDownLatch(10);
-//      for (int i = 0; i < 10; i++) {
-//        Runnable thread = () -> {
-//          for (int j = 0; j < 100; j++) {
-//            clientGet.run();
-//            clientPost.run();
-//          }
-//          completed.countDown();
-//        };
-//        new Thread(thread).start();
-//      }
-//
-//      completed.await();
 
       int totalThreads = GROUP_SIZE * NUMBER_OF_GROUPS;
 
@@ -82,18 +69,19 @@ public class Main {
 
       long end = System.currentTimeMillis();
       Dataset<Row> data = spark.createDataFrame(list, schema);
-      //data.show();
+//      data.show();
 //      Dataset<Row> getMean = data.filter("requestType == 'GET'").groupBy().avg("latency");
-      Dataset<Row> postMean = data.filter("requestType == 'POST'").groupBy().avg("latency");
+      Dataset<Row> postMean = data.groupBy().avg("latency");
 //      Dataset<Row> getMin = data.filter("requestType == 'GET'").groupBy().min("latency");
-      Dataset<Row> postMin = data.filter("requestType == 'POST'").groupBy().min("latency");
+      Dataset<Row> postMin = data.groupBy().min("latency");
 //      Dataset<Row> getMax = data.filter("requestType == 'GET'").groupBy().max("latency");
-      Dataset<Row> postMax = data.filter("requestType == 'POST'").groupBy().max("latency");
+      Dataset<Row> postMax = data.groupBy().max("latency");
 //      double[] get5099 = data.filter("requestType == 'GET'").stat()
 //              .approxQuantile("latency", new double[] {0.5, 0.99}, 0);
-      double[] post5099 = data.filter("requestType == 'POST'").stat()
+      double[] post5099 = data.stat()
               .approxQuantile("latency", new double[] {0.5, 0.99}, 0);
 //      System.out.println("GET Mean Latency: " + getMean.first().getDouble(0));
+      System.out.println("[RUN CONFIG]: " + GROUP_SIZE + " " + NUMBER_OF_GROUPS + " "+ DELAY);
       System.out.println("POST Mean Latency: " + postMean.first().getDouble(0));
 //      System.out.println("GET Min Latency: " + getMin.first().getLong(0));
       System.out.println("POST Min Latency: " + postMin.first().getLong(0));
@@ -103,13 +91,19 @@ public class Main {
       System.out.println("POST 50th Percentile: " + post5099[0]);
 //      System.out.println("GET 99th Percentile: " + get5099[1]);
       System.out.println("POST 99th Percentile: " + post5099[1]);
+
       // overwrite csv automatically
-      data.write().format("csv").mode("overwrite").save("data.csv");
+      data.write()
+          .format("csv")
+          .mode("overwrite")
+          .save(GROUP_SIZE + "_" + NUMBER_OF_GROUPS + "_" + DELAY +".csv");
       spark.stop();
+
       System.out.println("Time taken: " + (end - start) / 1000 + "s");
       System.out.println(
-              "Throughput: " + ((totalThreads * 2000)) / ((end - start) / 1000) +
-                      " requests/s");
+              "Throughput: "
+              + ((totalThreads * 2000)) / ((end - start) / 1000)
+              + " requests/s");
 
       int postSuccesses = ClientPost.getSuccessCount();
       int postFails = ClientPost.getFailCount();
