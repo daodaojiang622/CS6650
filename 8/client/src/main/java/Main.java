@@ -102,8 +102,14 @@ public class Main {
       System.out.println("Time taken: " + (end - start) / 1000 + "s");
       System.out.println(
               "Throughput: "
-              + ((totalThreads * 100)) / ((end - start) / 1000)
+              // (1 new album + 3 reviews per request) * 100 requests per thread
+              + ((totalThreads * 400)) / ((end - start) / 1000)
               + " requests/s");
+      System.out.println(
+              "Throughput: "
+              // 100 requests per thread
+              + ((totalThreads * 100)) / ((end - start) / 1000)
+              + " HTTP POST requests/s");
 
       int postSuccesses = ClientPost.getSuccessCount();
       int postFails = ClientPost.getFailCount();
