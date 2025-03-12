@@ -1,1 +1,0 @@
-{"errorMessage":"Class LambdaHandler has no public zero-argument constructor","errorType":"java.lang.Exception"}
