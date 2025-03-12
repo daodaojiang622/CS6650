@@ -51,7 +51,7 @@ public class Main {
       for (int j = 0; j < NUMBER_OF_GROUPS; j++) {
         for (int i = 0; i < GROUP_SIZE; i++) {
           Runnable thread = () -> {
-            for (int k = 0; k < 1; k++) {
+            for (int k = 0; k < 100; k++) {
 //              clientGet.run();
               clientPost.run();
             }
@@ -102,7 +102,7 @@ public class Main {
       System.out.println("Time taken: " + (end - start) / 1000 + "s");
       System.out.println(
               "Throughput: "
-              + ((totalThreads * 2000)) / ((end - start) / 1000)
+              + ((totalThreads * 100)) / ((end - start) / 1000)
               + " requests/s");
 
       int postSuccesses = ClientPost.getSuccessCount();

@@ -6,5 +6,6 @@ To start the program:
 3. Make sure the GROUP_SIZE, NUM_OF_GROUPS, and DELAY in the Client.java are correct
 
 Note: 
-- data folder will be named after GROUP_SIZE, NUM_OF_GROUPS, and DELAY
-- if the data folder already exists, the program will auto rewrite so no need to manually delete
+- There is no need to add your image, I placed one in the resources folder
+- Data folder will be named after GROUP_SIZE, NUM_OF_GROUPS, and DELAY
+  - If the data folder already exists, the program will auto rewrite so no need to manually delete
