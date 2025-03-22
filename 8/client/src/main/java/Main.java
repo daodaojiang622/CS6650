@@ -21,7 +21,7 @@ public class Main {
   private static final int NUMBER_OF_GROUPS = 10;
   private static final int DELAY = 2;
   // IP address of the java servlet server
-  private static final String IPAddr = "localhost:9090/server_1_0_SNAPSHOT_war";
+  private static final String IPAddr = "localhost:9090/server_war";
   private static final String FILE_PATH = "src/main/resources/image.jpeg";
 
   public static void main(String[] args) {

@@ -43,6 +43,7 @@ public class ReviewConsumer {
         };
 
         channel.basicConsume(QUEUE_NAME, false, deliverCallback, consumerTag -> {});
+
     }
 
     private static void saveReviewToDatabase(int albumId, String reviewType, String userId) {
